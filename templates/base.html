@@ -1,0 +1,363 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Restaurant Booking{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* Navbar */
+        header nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            padding: 10px 20px;
+            background: #333;
+            border-radius: 8px;
+        }
+
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            background-color: #28a745;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px;
+            padding: 0;
+            height: 350px;
+        }
+
+        .hero .banner {
+            flex: 1;
+            background-color: white;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+        }
+
+        .restaurant-name {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #222;
+            text-transform: uppercase;
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 1s forwards;
+        }
+
+        .restaurant-name::after {
+            content: "";
+            display: block;
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff4d4d, #b30000);
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .restaurant-tagline {
+            font-size: 1.3rem;
+            color: #444;
+            margin-top: 18px;
+            font-weight: 300;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideRight 1s forwards;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideRight {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .carousel-container {
+            width: 750px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .carousel-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            border-radius: 25px;
+        }
+
+        .carousel-container img.active {
+            opacity: 1;
+        }
+
+        .dots {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .auth-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 360px;
+            text-align: center;
+            animation: scaleIn 0.4s ease;
+            position: relative;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .auth-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .auth-btn {
+            padding: 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn.customer {
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+        }
+
+        .auth-btn.owner {
+            background: linear-gradient(135deg, #ff4d4d, #b30000);
+            color: white;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'hotels:hotel_list' %}">Restaurants</a></li>
+
+                {% if not user.is_authenticated %}
+                <li>
+                    <a href="javascript:void(0)" onclick="openAuthModal('login')">Login</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="openAuthModal('register')">Register</a>
+                </li>
+                {% else %}
+
+                {% if user.is_authenticated and user.is_superuser %}
+                <li>
+                    <a href="{% url 'hotels:admin_dashboard' %}">Admin Panel</a>
+                </li>
+                {% endif %}
+
+                <li>
+                    <a href="{% url 'accounts:logout' %}">Logout</a>
+                </li>
+
+                {% endif %}
+            </ul>
+        </nav>
+
+    </header>
+
+    <main>
+        {% if request.resolver_match.url_name == 'home' %}
+        <div class="hero">
+            <div class="banner">
+                <div class="restaurant-name">GOURMET TABLES</div>
+                <div class="restaurant-tagline">Fine Dining at Your Fingertips</div>
+            </div>
+            <div class="carousel-container">
+                <img src="{% static 'images/restaurant_1.jpg' %}" class="active">
+                <img src="{% static 'images/restaurant_2.jpg' %}">
+                <img src="{% static 'images/restaurant_3.jpg' %}">
+                <img src="{% static 'images/restaurant_4.jpg' %}">
+                <img src="{% static 'images/restaurant_5.jpg' %}">
+            </div>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Restaurant Booking System</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const slides = document.querySelectorAll('.carousel-container img');
+            let current = 0;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+            }
+
+            setInterval(() => {
+                current = (current + 1) % slides.length;
+                showSlide(current);
+            }, 3000);
+        });
+    </script>
+    <!-- AUTH MODAL -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-card">
+            <span class="close-btn" onclick="closeAuthModal()">×</span>
+
+            <h2 id="authTitle">Choose Account Type</h2>
+
+            <div class="auth-options">
+                <a id="customerBtn" class="auth-btn customer" href="#">
+                    👤 Customer
+                </a>
+
+                <a id="ownerBtn" class="auth-btn owner" href="#">
+                    🏪 Restaurant Owner
+                </a>
+                <a id="adminBtn" class="auth-btn admin" href="#">
+                    🛡️ Admin
+                </a>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        function openAuthModal(type) {
+            const modal = document.getElementById("authModal");
+            modal.style.display = "flex";
+
+            if (type === "login") {
+                document.getElementById("authTitle").innerText = "Login as";
+                document.getElementById("customerBtn").href = "{% url 'accounts:customer_login' %}";
+                document.getElementById("ownerBtn").href = "{% url 'hotels:owner_login' %}";
+                document.getElementById("adminBtn").href = "{% url 'accounts:admin_login' %}";
+            } else {
+                document.getElementById("authTitle").innerText = "Register as";
+                document.getElementById("customerBtn").href = "{% url 'accounts:customer_register' %}";
+                document.getElementById("ownerBtn").href = "{% url 'hotels:owner_register' %}";
+                document.getElementById("adminBtn").style.display = "none";
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById("authModal").style.display = "none";
+        }
+        document.getElementById("authModal").addEventListener("click", function (e) {
+            if (e.target === this) {
+                closeAuthModal();
+            }
+        });
+
+    </script>
+
+
+</body>
+
+</html>

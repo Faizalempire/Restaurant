@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Book Table - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+
+<div class="booking-wrapper">
+
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" class="theme-toggle">🌙</button>
+
+    <!-- Restaurant Title -->
+    <h1 class="booking-title">Reserve a Table at <span>{{ restaurant.name }}</span></h1>
+
+    <!-- Glass Card -->
+    <div class="booking-card">
+        <form method="POST" action="{% url 'hotels:book_table' restaurant.id %}">
+            {% csrf_token %}
+
+            <!-- Name (read-only for logged-in user) -->
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" name="user" value="{{ request.user.username }}" readonly>
+            </div>
+
+            <!-- Date -->
+            <div class="form-group">
+                <label>Select Date</label>
+                <input type="date" name="booking_date" required placeholder="DD-MM-YYYY">
+            </div>
+
+            <!-- Time -->
+            <div class="form-group">
+                <label>Select Time</label>
+                <select name="booking_time" required>
+                    <option value="">-- Choose Time --</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="13:00">1:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="19:00">7:00 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                    <option value="21:00">9:00 PM</option>
+                </select>
+            </div>
+
+            <!-- Guests / Table Size -->
+            <div class="form-group">
+                <label>Number of Guests</label>
+                <select name="guests" required>
+                    <option value="">-- Choose Table Size --</option>
+                    <option value="2">2 Seater</option>
+                    <option value="4">4 Seater</option>
+                    <option value="6">6 Seater</option>
+                </select>
+            </div>
+
+            <!-- Confirm Booking Button -->
+            <div class="button-group">
+                <button type="submit" class="book-btn">Confirm Booking</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Elegant Opening Hours -->
+    <div class="opening-hours-card">
+        <h2>Opening Hours</h2>
+        <ul>
+            <li><span>Monday - Friday:</span> 10:00 AM - 10:00 PM</li>
+            <li><span>Saturday:</span> 11:00 AM - 11:00 PM</li>
+            <li><span>Sunday:</span> 11:00 AM - 9:00 PM</li>
+        </ul>
+    </div>
+
+</div>
+
+<style>
+/* ------------------------------
+   LUXURIOUS SLOW GRADIENT
+-------------------------------*/
+.booking-wrapper {
+    padding: 60px 0;
+    min-height: 100vh;
+    background: linear-gradient(120deg, #f0fff5, #f0f5ff, #f5f5f5, #f3f0ff, #fff0f5);
+    background-size: 400% 400%;
+    animation: smoothGradient 36s ease infinite;
+}
+
+@keyframes smoothGradient {
+    0% { background: linear-gradient(120deg, #f0fff5, #f0f5ff, #f5f5f5, #f3f0ff, #fff0f5); }
+    16% { background: linear-gradient(120deg, #e6fff0, #e0f5ff, #f0f0f0, #e6e0ff, #ffe6f0); }
+    33% { background: linear-gradient(120deg, #dfffea, #d0f0ff, #e8e8e8, #dfe0ff, #ffdff0); }
+    50% { background: linear-gradient(120deg, #e0fff5, #d0f5ff, #f5f5f5, #e0d0ff, #ffe0f5); }
+    66% { background: linear-gradient(120deg, #f0fff5, #e6f5ff, #f0f0f0, #f3e0ff, #fff0f5); }
+    83% { background: linear-gradient(120deg, #f0fff0, #f0f5ff, #f5f5f5, #f3f0ff, #fff0f0); }
+    100% { background: linear-gradient(120deg, #f0fff5, #f0f5ff, #f5f5f5, #f3f0ff, #fff0f5); }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 100px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgba(212, 175, 106, 0.85);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    transition: background 0.4s, transform 0.2s, box-shadow 0.4s;
+}
+.theme-toggle:hover {
+    transform: scale(1.1);
+    background: rgba(212, 175, 106, 0.25);
+    box-shadow: 0 0 12px rgba(212, 175, 106, 0.85);
+}
+
+/* Title */
+.booking-title {
+    text-align: center;
+    font-size: 2.6rem;
+    margin-bottom: 30px;
+    font-family: 'Cinzel', serif;
+    color: #2b2b2b;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+}
+.booking-title span {
+    color: #b6954e;
+}
+
+/* Glass Card */
+.booking-card {
+    width: 55%;
+    margin: auto;
+    padding: 25px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.48);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    border: 2px solid rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    font-weight: bold;
+    color: #4a493f;
+    margin-bottom: 5px;
+    display: block;
+}
+input, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #c0b090;
+    background: #fffdf8;
+    font-size: 1rem;
+    outline: none;
+    transition: box-shadow 0.3s, border 0.3s;
+    font-family: 'Cinzel', serif;
+}
+input::placeholder, select option {
+    color: #8c7b5d;
+    font-family: 'Cinzel', serif;
+    font-style: italic;
+    font-weight: 500;
+}
+input:focus, select:focus {
+    border-color: #b6954e;
+    box-shadow: 0 0 8px rgba(182,149,78,0.3);
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+.book-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    background: linear-gradient(135deg, #c5ad80, #d1ba95);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.book-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 20px rgba(182,149,78,0.4);
+}
+
+/* Opening Hours Card */
+.opening-hours-card {
+    width: 50%;
+    margin: 30px auto;
+    padding: 25px 30px;
+    border-radius: 18px;
+    background: rgba(255,248,231,0.85);
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
+.opening-hours-card h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    color: #046307;
+    margin-bottom: 15px;
+}
+.opening-hours-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.opening-hours-card li {
+    font-size: 1.05rem;
+    color: #3a3a3a;
+    margin: 6px 0;
+}
+.opening-hours-card li span {
+    font-weight: 600;
+    color: #2b2b2b;
+}
+
+/* Responsive */
+@media (max-width:768px) {
+    .booking-card, .opening-hours-card { width: 90%; }
+    .button-group { justify-content: center; }
+}
+</style>
+
+<script>
+    // Theme Toggle
+    const toggleBtn = document.getElementById('themeToggle');
+    toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('manual-dark');
+        toggleBtn.textContent = document.body.classList.contains('manual-dark') ? '🌞' : '🌙';
+    });
+</script>
+
+{% endblock %}

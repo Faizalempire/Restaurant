@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receipt - Order #{{ order.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 40px;
+        }
+        .receipt {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .center {
+            text-align: center;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+        table th, table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        table th {
+            background: #f7f7f7;
+        }
+        .summary {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .print-btn {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .print-btn button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+            body {
+                background: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="receipt">
+    <h1>{{ order.restaurant.name }}</h1>
+    <p class="center">Order Receipt</p>
+
+    <p>
+        <strong>Order ID:</strong> {{ order.id }}<br>
+        <strong>Date:</strong> {{ order.created_at|date:"d M Y, h:i A" }}<br>
+        <strong>Payment Mode:</strong> {{ order.payment_method }}
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.menu_item.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price|floatformat:2 }}</td>
+                <td>
+                    ₹{% widthratio item.price item.quantity 1 %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="center">No items found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="summary">
+        <p>Subtotal: ₹{{ subtotal|floatformat:2 }}</p>
+        <p>GST (5%): ₹{{ gst|floatformat:2 }}</p>
+        <p><strong>Total Paid: ₹{{ total|floatformat:2 }}</strong></p>
+    </div>
+
+    <div class="print-btn">
+        <button onclick="window.print()">🖨 Print / Save PDF</button>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reviews - {{ hotel.name }} | Gourmet Tables{% endblock %}
+
+{% block content %}
+<section class="reviews-container">
+
+    <div class="hotel-header">
+        <h1>Reviews for {{ hotel.name }}</h1>
+        <p class="avg-rating">Average Rating: {{ avg_rating }} ★</p>
+        <a href="{% url 'hotels:hotel_detail' hotel.id %}" class="btn-back">← Back to Details</a>
+    </div>
+
+    <!-- Review Form -->
+    <div class="review-form-card">
+        <h2>Leave a Review</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" name="user" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label>Rating</label>
+                <select name="rating" required>
+                    <option value="">Select Rating</option>
+                    {% for i in "12345" %}
+                    <option value="{{ i }}">{{ i }} ★</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Comment</label>
+                <textarea name="comment" placeholder="Write your review..." rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Submit Review</button>
+        </form>
+    </div>
+
+    <!-- List of Reviews -->
+    <div class="reviews-list">
+        <h2>Customer Reviews</h2>
+        {% if reviews %}
+            {% for rev in reviews %}
+            <div class="review-card">
+                <p class="rev-user"><strong>{{ rev.user }}</strong> rated <strong>{{ rev.rating }} ★</strong></p>
+                <p class="rev-comment">{{ rev.comment }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No reviews yet. Be the first to review!</p>
+        {% endif %}
+    </div>
+
+</section>
+
+<style>
+/* Page Background */
+body {
+    background: linear-gradient(160deg, #046307 0%, #FFF8E7 60%);
+    background-attachment: fixed;
+}
+
+/* Container */
+.reviews-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Header */
+.hotel-header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    color: #046307;
+    margin-bottom: 10px;
+}
+
+.avg-rating {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.btn-back {
+    display: inline-block;
+    text-decoration: none;
+    background: #b88b4a;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+/* Review Form Card */
+.review-form-card {
+    background: rgba(255, 248, 231, 0.85);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.review-form-card h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #046307;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #4a493f;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #c0b090;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    outline: none;
+    background: #fffdf8;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #b6954e;
+    box-shadow: 0 0 8px rgba(182,149,78,0.3);
+}
+
+.btn-submit {
+    padding: 12px 20px;
+    background: #D4AF37;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s ease;
+}
+.btn-submit:hover {
+    background: #b88b4a;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+/* Reviews List */
+.reviews-list h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    color: #046307;
+    margin-bottom: 20px;
+}
+
+.review-card {
+    background: #fff8e7;
+    padding: 15px 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+.rev-user {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+.rev-comment {
+    font-size: 1rem;
+    color: #4a493f;
+}
+
+/* Responsive */
+@media (max-width:768px){
+    .reviews-container { padding: 0 10px; }
+    .review-card { padding: 12px 15px; }
+}
+</style>
+
+{% endblock %}

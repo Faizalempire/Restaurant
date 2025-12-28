@@ -1,0 +1,284 @@
+<style>
+
+/* Carousel container */
+.carousel {
+  position: relative;
+  max-width: 900px;
+  /* Adjust width to your page layout */
+  height: 500px;
+  /* Set enough height to display full image */
+  margin: auto;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+}
+
+/* Carousel slides */
+.slides {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
+}
+
+.slides img {
+  width: 100%;
+  height: 100%;
+  /* Adjusted height */
+  object-fit: contain;
+  /* Shows full image without cropping */
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  /* Optional: in case image doesn’t fill container */
+}
+
+/* Navigation buttons */
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 18px;
+  user-select: none;
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+/* Dots indicators */
+.dots {
+  text-align: center;
+  position: absolute;
+  bottom: 15px;
+  width: 100%;
+}
+
+.dot {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  margin: 0 5px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: white;
+}
+
+</style>
+
+/* ---------- Home page styles ---------- */
+.home-hero {
+  padding: 36px 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.02));
+}
+
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  padding: 10px;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: 2.4rem;
+  margin: 0 0 8px;
+  color: #222;
+}
+
+.hero-text p {
+  margin: 0 0 18px;
+  color: #555;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  max-width: 760px;
+}
+
+.search-form input[type="text"],
+.search-form select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  flex: 1;
+}
+
+.search-form .btn {
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.search-form .btn.primary {
+  background: #1A73E8;
+  color: #fff;
+}
+
+/* hero image */
+.hero-image {
+  width: 420px;
+  max-width: 40%;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* featured */
+.featured .container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 12px;
+}
+
+.section-head h2 {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+  color: #222;
+}
+
+.section-head p {
+  margin: 0 0 18px;
+  color: #666;
+}
+
+/* grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-body h3 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  color: #222;
+}
+
+.card-body .meta {
+  margin: 0 0 12px;
+  color: #7a7a7a;
+  font-size: 0.9rem;
+}
+
+.card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #1A73E8;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn.outline {
+  background: transparent;
+  color: #1A73E8;
+  border: 1px solid #1A73E8;
+}
+
+/* how it works */
+.how-it-works {
+  background: #fafafa;
+  padding: 28px 0;
+  margin-top: 18px;
+}
+
+.how-it-works .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+.steps {
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.step {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.step strong {
+  display: block;
+  font-size: 1.6rem;
+  color: #1A73E8;
+  margin-bottom: 8px;
+}
+
+/* responsiveness */
+@media (max-width: 900px) {
+  .hero-inner {
+    flex-direction: column-reverse;
+    gap: 18px;
+  }
+
+  .hero-image img {
+    height: 220px;
+  }
+
+  .steps {
+    flex-direction: column;
+  }
+}

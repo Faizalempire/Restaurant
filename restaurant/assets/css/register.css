@@ -1,0 +1,109 @@
+.register-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e9e9e9;
+    padding: 40px;
+}
+
+/* MAIN CONTAINER */
+.register-box {
+    width: 100%;            /* FIXED */
+    max-width: 1400px;
+    height: 850px;
+    display: flex;
+    border-radius: 38px;
+    overflow: hidden;       /* FIXED */
+    box-shadow: 0 10px 45px rgba(0,0,0,0.30);
+}
+
+/* LEFT IMAGE */
+.register-left {
+    flex: 1;
+    background: url("/static/images/register_left.jpg") center/cover no-repeat;
+}
+
+/* RIGHT IMAGE */
+.register-right {
+    flex: 1;
+    background: url("/static/images/register_right.jpg") center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* FORCE BORDER SHAPE VISIBLE */
+.register-left {
+    border-radius: 38px 0 0 38px;
+}
+
+.register-right {
+    border-radius: 0 38px 38px 0;   /* FIXED */
+}
+
+/* GLASS CARD */
+.glass-card {
+    width: 90%;                      /* FIXED */
+    max-width: 460px;
+    padding: 45px 50px;
+
+    background: rgba(255,255,255,0.16);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.28);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.30);
+
+    text-align: center;
+    color: #fff;
+}
+
+/* Heading */
+.title {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.underline {
+    width: 65px;
+    height: 4px;
+    background: #ff3d3d;
+    margin: 0 auto 16px auto;
+}
+
+/* Inputs */
+.glass-card input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 14px;
+    background: rgba(255,255,255,0.75);
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #000;
+}
+
+/* Buttons */
+.primary-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1A73E8;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    margin-top: 10px;
+}
+
+.secondary-btn {
+    width: 100%;
+    padding: 14px;
+    background: #2ECC71;
+    border-radius: 14px;
+    border: none;
+    color: white;
+    margin-top: 12px;
+}

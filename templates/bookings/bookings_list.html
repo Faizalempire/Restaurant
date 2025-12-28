@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>My Reservations</h2>
+
+<h3>Upcoming Reservations</h3>
+{% if upcoming %}
+    {% for b in upcoming %}
+    <div class="reservation-card">
+        <h4>{{ b.hotel_name }}</h4>
+        <p>Date: {{ b.date }}</p>
+        <p>Time: {{ b.time }}</p>
+        <p>Table Size: {{ b.table_size }}</p>
+
+        <span class="status-badge {{ b.status }}">{{ b.status|title }}</span>
+
+        {% if b.status != "cancelled" %}
+        <a href="{% url 'bookings:cancel_booking' b.id %}" class="btn-cancel">Cancel Booking</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No upcoming reservations</p>
+{% endif %}
+
+<hr>
+
+<h3>Past Reservations</h3>
+{% if past %}
+    {% for b in past %}
+    <div class="reservation-card">
+        <h4>{{ b.hotel_name }}</h4>
+        <p>Date: {{ b.date }}</p>
+        <p>Time: {{ b.time }}</p>
+        <p>Table Size: {{ b.table_size }}</p>
+
+        <span class="status-badge {{ b.status }}">{{ b.status|title }}</span>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No past reservations</p>
+{% endif %}
+
+{% endblock %}

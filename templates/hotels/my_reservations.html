@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Reservations | Gourmet Tables{% endblock %}
+
+{% block content %}
+<div class="reservations-page">
+    <div class="reservations-container">
+        <h1>My Reservations</h1>
+
+        <table class="reservations-table">
+            <thead>
+                <tr>
+                    <th>Hotel</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Guests</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="reservations-body">
+                {% if reservations %}
+                {% for res in reservations %}
+                <tr data-order-id="{{ res.order_id }}">
+                    <td>{{ res.restaurant.name }}</td>
+                    <td>{{ res.user.username }}</td>
+                    <td>{{ res.booking_date }}</td>
+                    <td>{{ res.booking_time }}</td>
+                    <td>{{ res.guests }}</td>
+                    <td class="reservation-status" style="font-weight:bold;">
+                        {% if res.status == "PENDING" %}
+                            <span style="color:#ffc107;">Pending</span>
+                        {% elif res.status == "ACCEPTED" %}
+                            <span style="color:#28a745;">Accepted</span>
+                        {% elif res.status == "REJECTED" %}
+                            <span style="color:#dc3545;">Rejected</span>
+                        {% else %}
+                            <span style="color:#007bff;">Completed</span>
+                        {% endif %}
+
+                        {% if res.order_id and res.status == "ACCEPTED" or res.status == "COMPLETED" %}
+                        <br>
+                        <a href="/hotels/receipt/{{ res.order_id }}/"
+                           target="_blank"
+                           title="Print Receipt"
+                           style="
+                               display:inline-block;
+                               margin-top:6px;
+                               font-size:1.1rem;
+                               text-decoration:none;
+                               cursor:pointer;
+                           ">
+                            🖨️
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6" class="no-reservations">
+                        You have no reservations yet.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Keep all your existing styles untouched */
+    .reservations-page {
+        min-height: 100vh;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #1f2a44, #3a3f58, #8c7b6b, #d9c3a6);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .reservations-container {
+        max-width: 1000px;
+        width: 100%;
+        padding: 30px;
+        font-family: 'Arial', sans-serif;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        color: #111;
+    }
+
+    .reservations-container h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+    }
+
+    .reservations-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .reservations-table th,
+    .reservations-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .reservations-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+
+    .reservations-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .no-reservations {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #555;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .reservations-container {
+            padding: 20px;
+        }
+
+        .reservations-table th,
+        .reservations-table td {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+
+        .reservations-container h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<script>
+    function fetchReservationStatus() {
+        fetch("{% url 'hotels:my_reservations_ajax' %}")
+            .then(response => response.json())
+            .then(data => {
+                data.orders.forEach(order => {
+                    const row = document.querySelector(
+                        'tr[data-order-id="' + order.id + '"]'
+                    );
+
+                    if (row) {
+                        let receiptLink = "";
+
+                        if (order.status_text === "Accepted" || order.status_text === "Completed") {
+                            receiptLink = `
+                                <br>
+                                <a href="/hotels/receipt/${order.id}/"
+                                   target="_blank"
+                                   title="Print Receipt"
+                                   style="
+                                       display:inline-block;
+                                       margin-top:6px;
+                                       font-size:1.1rem;
+                                       text-decoration:none;
+                                       cursor:pointer;
+                                   ">
+                                    🖨️
+                                </a>`;
+                        }
+
+                        row.querySelector('.reservation-status').innerHTML =
+                            `<span style="color:${order.status_color}; font-weight:bold;">
+                                ${order.status_text}
+                             </span>${receiptLink}`;
+                    }
+                });
+            })
+            .catch(err => console.error("Error fetching reservation status:", err));
+    }
+
+    fetchReservationStatus();
+    setInterval(fetchReservationStatus, 5000);
+</script>
+
+{% endblock %}

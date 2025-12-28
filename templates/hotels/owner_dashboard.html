@@ -1,0 +1,297 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block title %}Owner Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .dashboard-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .dashboard-card h2 {
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .badge-approved { background: #28a745; color: #fff; }
+    .badge-pending { background: #ffc107; color: #333; }
+    .badge-rejected { background: #dc3545; color: #fff; }
+
+    .action-btn {
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 8px;
+        background: #28a745;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .action-btn:hover { background: #218838; }
+
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 20px;
+    }
+
+    .menu-item {
+        border: 1px solid #eee;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        position: relative;
+    }
+    .menu-item img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        background: #f9f9f9;
+    }
+    .menu-item-content { padding: 15px; }
+    .menu-item-content h4 { margin: 0 0 8px; }
+    .menu-item-content p { margin: 0; font-weight: 600; color: #28a745; }
+    .menu-item-buttons { margin-top: 10px; }
+    .menu-item-buttons a,
+    .menu-item-buttons form button {
+        margin-right: 5px;
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        color: #fff;
+    }
+    .btn-edit { background: #007bff; }
+    .btn-edit:hover { background: #0069d9; }
+    .btn-delete { background: #dc3545; }
+    .btn-delete:hover { background: #c82333; }
+
+    .review,
+    .order-row {
+        border-bottom: 1px solid #eee;
+        padding: 12px 0;
+    }
+    .review:last-child,
+    .order-row:last-child { border-bottom: none; }
+
+    /* === BOOKING SECTION (ADDED ONLY) === */
+    .booking-status {
+        font-weight: 600;
+    }
+    .btn-accept {
+        background: #28a745;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        margin-right: 6px;
+    }
+    .btn-reject {
+        background: #dc3545;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <!-- Restaurant Info -->
+    <div class="dashboard-card">
+        <h2>{{ restaurant.name }}</h2>
+        <p><strong>Location:</strong> {{ restaurant.location }}</p>
+        <p><strong>Status:</strong>
+            {% if restaurant.status == "APPROVED" %}
+                <span class="badge badge-approved">APPROVED</span>
+            {% elif restaurant.status == "PENDING" %}
+                <span class="badge badge-pending">PENDING</span>
+            {% else %}
+                <span class="badge badge-rejected">REJECTED</span>
+            {% endif %}
+        </p>
+        <p><strong>Total Earnings:</strong> ₹{{ total_earnings }}</p>
+    </div>
+
+    <!-- Add Menu Button -->
+    {% if restaurant.status == "APPROVED" %}
+    <div class="dashboard-card">
+        <h2>Menu Management</h2>
+        <a href="{% url 'hotels:add_menu_item' restaurant.id %}" class="action-btn">+ Add New Item</a>
+    </div>
+    {% endif %}
+
+    <!-- Menu Items -->
+    <div class="dashboard-card">
+        <h2>Your Menu Items</h2>
+
+        {% if menu_items %}
+        <div class="menu-grid">
+            {% for item in menu_items %}
+            <div class="menu-item">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                {% endif %}
+                <div class="menu-item-content">
+                    <h4>{{ item.name }}</h4>
+                    <p>₹ {{ item.price }}</p>
+                    <div class="menu-item-buttons">
+                        <a href="{% url 'hotels:edit_menu_item' item.id %}" class="btn-edit">Edit</a>
+                        <form action="{% url 'hotels:delete_menu_item' item.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No menu items added yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- ================== BOOKING SCHEDULE (ADDED) ================== -->
+    <div class="dashboard-card">
+        <h2>Table Booking Requests</h2>
+
+        {% if table_bookings %}
+        <table style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Guests</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in table_bookings %}
+                <tr class="order-row">
+                    <td>{{ booking.user.username }}</td>
+                    <td>{{ booking.booking_date }}</td>
+                    <td>{{ booking.booking_time }}</td>
+                    <td>{{ booking.guests }}</td>
+                    <td class="booking-status">{{ booking.status }}</td>
+                    <td>
+                        {% if booking.status == "PENDING" %}
+                            <a href="{% url 'hotels:accept_booking' booking.id %}" class="btn-accept">Accept</a>
+                            <a href="{% url 'hotels:reject_booking' booking.id %}" class="btn-reject">Reject</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p>No booking requests yet.</p>
+        {% endif %}
+    </div>
+    <!-- ================== END BOOKING SCHEDULE ================== -->
+
+    <!-- Orders -->
+    <div class="dashboard-card">
+        <h2>Orders</h2>
+        {% if orders %}
+        <table style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>User</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr class="order-row">
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>₹{{ order.total_price }}</td>
+                    <td>
+                        <select class="order-status" data-order-id="{{ order.id }}">
+                            <option value="PENDING" {% if order.status == "PENDING" %}selected{% endif %}>PENDING</option>
+                            <option value="ACCEPTED" {% if order.status == "ACCEPTED" %}selected{% endif %}>ACCEPTED</option>
+                            <option value="REJECTED" {% if order.status == "REJECTED" %}selected{% endif %}>REJECTED</option>
+                            <option value="COMPLETED" {% if order.status == "COMPLETED" %}selected{% endif %}>COMPLETED</option>
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No orders yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Reviews -->
+    <div class="dashboard-card">
+        <h2>Customer Reviews</h2>
+        {% if reviews %}
+        {% for review in reviews %}
+        <div class="review">
+            <strong>{{ review.user }}</strong> ⭐ {{ review.rating }}/5
+            <p>{{ review.comment }}</p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No reviews yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.order-status').forEach(select => {
+    select.addEventListener('change', () => {
+        const orderId = select.dataset.orderId;
+        const status = select.value;
+
+        fetch("{% url 'hotels:update_order_status' 0 %}".replace('0', orderId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success){
+                alert(`Order ${orderId} updated to ${status}`);
+            } else {
+                alert("Failed to update order");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

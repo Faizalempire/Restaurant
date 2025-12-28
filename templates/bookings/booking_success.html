@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="
+    max-width:700px; 
+    margin:40px auto; 
+    background:#fff0f4; 
+    padding:30px; 
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 5px 18px rgba(0,0,0,0.15);
+">
+    <h2 style="color:#b3003c;">Booking Confirmed!</h2>
+    <p style="font-size:1.2rem;">Thank you, {{ booking.name }}</p>
+
+    <p><strong>Restaurant:</strong> {{ booking.hotel_name }}</p>
+    <p><strong>Date:</strong> {{ booking.date }}</p>
+    <p><strong>Time:</strong> {{ booking.time }}</p>
+    <p><strong>Table:</strong> {{ booking.table_size }} Seater</p>
+
+    <a href="{% url 'hotels:hotel_list' %}" 
+       style="display:block; margin-top:20px; color:white; background:#b3003c; padding:12px; border-radius:10px;">
+       Back to Restaurants
+    </a>
+</div>
+{% endblock %}

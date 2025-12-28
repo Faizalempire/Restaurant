@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Cart | Gourmet Tables{% endblock %}
+
+{% block content %}
+<section class="hotel-detail-container">
+    <h2>Your Order</h2>
+
+    {% if items %}
+    <div class="cart-page-items">
+        {% for item in items %}
+        <div class="cart-page-item">
+            <img src="{{ item.image }}" alt="{{ item.name }}">
+            <span>{{ item.name }} x {{ item.quantity }}</span>
+            <span>₹{{ item.price|floatformat:2 }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+    <h3>Total: ₹{{ subtotal|floatformat:2 }}</h3>
+
+    <!-- 🔑 CSRF TOKEN (REQUIRED) -->
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <!-- Payment Method Selection -->
+    <div class="payment-section">
+        <h3>Select Payment Method</h3>
+
+        <label>
+            <input type="radio" name="payment_method" value="offline" checked>
+            Pay at Restaurant (Offline)
+        </label><br>
+
+        <label>
+            <input type="radio" name="payment_method" value="online">
+            Online Payment
+        </label>
+
+        <!-- Online Payment Options -->
+        <div id="online-options" style="display:none; margin-top:10px;">
+            <button type="button" class="online-btn" data-method="gpay">Google Pay / UPI</button>
+            <button type="button" class="online-btn" data-method="razorpay">Razorpay</button>
+            <button type="button" class="online-btn" data-method="paytm">Paytm</button>
+            <button type="button" class="online-btn" data-method="phonepe">PhonePe / UPI</button>
+        </div>
+    </div>
+
+    <!-- Place Order Button -->
+    <button id="placeOrderBtn" class="cart-btn">Place Order</button>
+
+    {% else %}
+    <p>Your cart is empty.</p>
+    {% endif %}
+    <form style="display:none;">
+        {% csrf_token %}
+    </form>
+</section>
+
+<style>
+    .cart-page-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px;
+        border-radius: 12px;
+        background: #fff3d4;
+        margin-bottom: 10px;
+    }
+
+    .cart-page-item img {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .cart-page-item span {
+        flex: 1;
+        text-align: left;
+    }
+
+    .cart-btn {
+        display: block;
+        width: 50%;
+        margin: 20px auto;
+        padding: 14px 0;
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, #1e6bff, #559cff);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .cart-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 25px rgba(30, 107, 255, 0.4);
+    }
+
+    .payment-section {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .payment-section label {
+        font-size: 1rem;
+        margin-right: 20px;
+    }
+
+    .online-btn {
+        min-width: 250px;
+        padding: 10px 18px;
+        margin: 5px;
+        background: #1e6bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .online-btn:hover {
+        background: #559cff;
+    }
+</style>
+
+<script>
+    let selectedPayment = 'offline';
+
+    // Toggle online options
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const onlineOptions = document.getElementById('online-options');
+            if (radio.value === 'online') {
+                onlineOptions.style.display = 'block';
+                selectedPayment = '';
+            } else {
+                onlineOptions.style.display = 'none';
+                selectedPayment = 'offline';
+            }
+        });
+    });
+
+    // Choose online payment
+    document.querySelectorAll('.online-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedPayment = btn.dataset.method;
+            alert(`You selected ${btn.dataset.method}`);
+        });
+    });
+
+    // Submit order
+    document.getElementById('placeOrderBtn').addEventListener('click', () => {
+        if (selectedPayment === '') {
+            alert("Please select an online payment method!");
+            return;
+        }
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'hotels:place_order' %}";
+
+        // CSRF
+        const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        form.innerHTML = `
+        <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+        <input type="hidden" name="payment_method" value="${selectedPayment}">
+    `;
+
+        document.body.appendChild(form);
+        form.submit();
+    });
+</script>
+
+{% endblock %}

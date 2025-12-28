@@ -1,0 +1,322 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Login - Gourmet Tables</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0d5955;
+            overflow: hidden;
+        }
+
+        /* Blurred background image */
+        .page-bg {
+            position: fixed;
+            inset: 0;
+            background:url("{% static 'images/restaurant_bg.jpg' %}") center/cover no-repeat;
+            filter: blur(6px);
+            opacity: 0.4;
+            z-index: -2;
+        }
+
+        .page-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0f6a64;
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        /* Main card with split layout */
+        .card-wrapper {
+            width: 800px;
+            max-width: 95%;
+            height: 480px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left photo panel */
+        .card-left {
+            flex: 1;
+            background:url("{% static 'images/restaurant_bg.jpg' %}") center/cover no-repeat;
+            filter: grayscale(10%);
+            position: relative;
+        }
+
+        .card-left::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: #0c746b;
+            opacity: 0.85;
+            mix-blend-mode: multiply;
+        }
+
+        /* Wavy shape between panels */
+        .wave {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 45%;
+            width: 120px;
+            background: #ffffff;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            clip-path: path("M 0 0 C 45 80 45 160 0 240 C -45 320 -45 400 0 480 L 120 480 L 120 0 Z");
+        }
+
+        /* Right content (form) */
+        .card-right {
+            flex: 1;
+            padding: 60px 60px 40px 80px;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #12a594;
+            margin-bottom: 10px;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: gold;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 30px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 28px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            font-size: 14px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            outline: none;
+            transition: 0.2s;
+            background: #f9f9f9;
+        }
+
+        .input-group input:focus {
+            border-color: #12a594;
+            box-shadow: 0 0 0 3px rgba(18, 165, 148, 0.15);
+            background: #ffffff;
+        }
+
+        .input-group span {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #999;
+        }
+
+        .auth-btn {
+            margin-top: 6px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 25px;
+            background: #12a594;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-btn:hover {
+            background: #0f8b7d;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .auth-footer {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .auth-footer a {
+            color: #12a594;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .social-row {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .social-circle {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .social-circle:hover {
+            background: #12a594;
+            color: #fff;
+            border-color: #12a594;
+        }
+
+        @media (max-width:768px) {
+            body {
+                padding: 20px;
+            }
+
+            .card-wrapper {
+                height: auto;
+                flex-direction: column;
+            }
+
+            .card-left {
+                display: none;
+            }
+
+            .wave {
+                display: none;
+            }
+
+            .card-right {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-bg"></div>
+    <div class="page-overlay"></div>
+
+    <div class="card-wrapper">
+        <div class="card-left"></div>
+        <div class="wave"></div>
+
+        <div class="card-right">
+            <div class="brand">Gourmet Tables</div>
+            <div class="star-rating">★★★★★</div>
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Log in to your account to continue</p>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div style="
+            background:#e6fffa;
+            color:#065f46;
+            padding:10px 14px;
+            border-radius:8px;
+            margin-bottom:14px;
+            font-size:14px;
+        ">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+
+            <form method="POST" action="{% url 'accounts:customer_login' %}">
+                {% csrf_token %}
+                <div class="input-group">
+                    <span>&#128100;</span>
+                    <input type="text" name="username" placeholder="awesome@user.com" required>
+                </div>
+                <div class="input-group">
+                    <span>&#128274;</span>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="auth-btn">Log In</button>
+            </form>
+
+            <div class="auth-footer">
+                Don’t have an account?
+                <a href="{% url 'accounts:customer_register' %}">Sign up!</a>
+            </div>
+
+            <div class="social-row">
+                <span>Or connect:</span>
+                <div class="social-icons">
+                    <div class="social-circle">f</div>
+                    <div class="social-circle">t</div>
+                    <div class="social-circle">in</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

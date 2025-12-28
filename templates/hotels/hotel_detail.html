@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ hotel.name }} | Gourmet Tables{% endblock %}
+
+{% block content %}
+<section class="hotel-detail-container">
+
+    <!-- Restaurant Info -->
+    <div class="hotel-header">
+        <div class="hotel-image" style="height:300px;">
+            {% if hotel.image %}
+            <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}">
+            {% else %}
+            <img src="{% static 'images/restaurant_default.jpg' %}" alt="{{ hotel.name }}">
+            {% endif %}
+        </div>
+        <div class="hotel-info">
+            <h1>{{ hotel.name }}</h1>
+            <div class="detail-buttons">
+                {% if real_restaurant_id %}
+                <!-- DB Restaurant -->
+                <a href="{% url 'hotels:book_table' real_restaurant_id %}" class="btn-detail">Book a Table</a>
+                <a href="{% url 'hotels:map_page' real_restaurant_id %}" class="btn-detail btn-map">View Location</a>
+                <a href="{% url 'hotels:reviews_page' real_restaurant_id %}" class="btn-detail btn-rate">Rate Now</a>
+                {% else %}
+                <!-- Dummy Restaurant -->
+                <a href="{% url 'hotels:book_table' hotel.id %}" class="btn-detail">Book a Table</a>
+                <a href="{% url 'hotels:map_page' hotel.id %}" class="btn-detail btn-map">View Location</a>
+                <span class="btn-detail btn-rate" style="pointer-events:none; opacity:0.6;">Rate Now</span>
+                {% endif %}
+
+                <!-- Proceed to Cart -->
+                <button type="button" onclick="goToCart()" class="btn-detail"
+                    style="background:#1e6bff; position:relative; z-index:10;">
+                    Proceed to Cart
+                </button>
+            </div>
+
+            <p>Type: {{ hotel.type }}</p>
+            <p>Rating: {{ hotel.rating }} ★</p>
+            <p>Location: {{ hotel.location }}</p>
+            <p>{{ hotel.description }}</p>
+        </div>
+    </div>
+
+    <!-- Menu Items Vertical Scroll -->
+    <div class="menu-items">
+        <h2>Menu</h2>
+
+        {% for item in menu_items %}
+        <div class="menu-item">
+            <div class="item-image">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                {% else %}
+                <img src="{% static 'images/food_placeholder.jpg' %}" alt="No image">
+                {% endif %}
+            </div>
+
+            <div class="item-info">
+                <h3>{{ item.name }}</h3>
+                <p>Freshly prepared and delicious.</p>
+                <p class="price">₹{{ item.price }}</p>
+            </div>
+
+            <div class="item-action">
+                <button class="add-btn" data-id="{{ item.id }}">+ Add</button>
+            </div>
+        </div>
+        {% empty %}
+        <p>No menu items available.</p>
+        {% endfor %}
+    </div>
+
+</section>
+
+<!-- CONFIRM ADD MODAL -->
+<div id="confirmModal" class="cart-modal">
+    <div class="cart-content">
+        <p>Add this item to cart?</p>
+
+        <button id="confirmAdd" class="cart-btn">Add to Cart</button>
+        <button onclick="closeConfirm()" class="close-btn">Cancel</button>
+    </div>
+</div>
+
+<!-- STYLES -->
+<style>
+body {
+    background: linear-gradient(160deg, #046307 0%, #FFF8E7 60%);
+    background-attachment: fixed;
+}
+
+.hotel-detail-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.hotel-header {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: rgba(255, 248, 231, 0.85);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hotel-image {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.hotel-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    transition: transform 0.5s ease;
+}
+
+.hotel-image img:hover {
+    transform: scale(1.05);
+}
+
+.hotel-info h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    color: #046307;
+    margin-bottom: 10px;
+}
+
+.hotel-info p {
+    margin: 6px 0;
+    font-size: 1.1rem;
+}
+
+.menu-items h2 {
+    font-size: 2rem;
+    font-family: 'Cinzel', serif;
+    margin-bottom: 20px;
+    color: #046307;
+}
+
+.menu-item {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding: 15px;
+    border-radius: 15px;
+    background: #fff8e7;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.item-image img {
+    width: 150px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.item-action {
+    margin-left: auto;
+}
+
+.add-btn {
+    background-color: #D4AF37;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.detail-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.btn-detail {
+    padding: 10px 18px;
+    background: #b88b4a;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-map {
+    background: #8c2f39;
+}
+
+.btn-rate {
+    background: #4a7c59;
+}
+
+.cart-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.cart-content {
+    background: #fff8e7;
+    margin: 80px auto;
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    width:90%;
+}
+
+.cart-btn,
+.close-btn {
+    width: 90%;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.cart-btn {
+    background: #1e6bff;
+}
+
+.close-btn {
+    background: #d32f2f;
+}
+</style>
+
+<!-- SCRIPT -->
+<script>
+let selectedItem = null;
+
+document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        selectedItem = btn.dataset.id;
+        document.getElementById('confirmModal').style.display = 'block';
+    });
+});
+
+function closeConfirm() {
+    document.getElementById('confirmModal').style.display = 'none';
+}
+
+document.getElementById('confirmAdd').onclick = () => {
+    fetch(`/hotels/cart-add/${selectedItem}/`)
+        .then(() => {
+            closeConfirm();
+            alert("Item added to cart successfully");
+        });
+};
+
+function goToCart() {
+    window.location.href = "/hotels/cart/";
+}
+</script>
+
+{% endblock %}

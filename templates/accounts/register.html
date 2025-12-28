@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register / Login</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Calibri&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Calibri', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+/* Increased size here */
+.outer-wrapper {
+    width: 95%;
+    max-width: 1400px;
+    height: 100vh; /* FULL PAGE HEIGHT */
+    display: flex;
+    border-radius: 30px; /* smoother curve */
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+}
+
+/* Left background */
+.left-half {
+    flex: 1;
+    background-image: url("{% static 'images/register_left.jpg' %}");
+    background-size: cover;
+    background-position: center;
+}
+
+/* Right background */
+.right-half {
+    flex: 1;
+    background-image: url("{% static 'images/register_right.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* overlay for readability */
+.right-half::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.15);
+}
+
+/* White form box */
+.register-container {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255,255,255,0.95);
+    border-radius: 25px;
+    padding: 45px 55px;
+    width: 420px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* Restaurant Name */
+.restaurant-name-top {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #222;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.restaurant-name-top::after {
+    content: "";
+    display: block;
+    width: 110px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff4d4d, #b30000);
+    border-radius: 4px;
+    margin: 8px auto 0;
+}
+
+.register-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.register-container p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.register-container input[type="text"],
+.register-container input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+/* Buttons */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.button-container button,
+.button-container a {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.submit-btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+.login-btn {
+    background-color: #28a745;
+    color: #fff;
+    text-align: center;
+}
+
+.login-btn:hover {
+    background-color: #1e7e34;
+}
+
+/* Mobile view */
+@media (max-width: 900px) {
+    .outer-wrapper {
+        flex-direction: column;
+        height: auto;
+    }
+    .left-half, .right-half {
+        width: 100%;
+        height: 300px;
+    }
+    .register-container {
+        width: 85%;
+        padding: 30px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="outer-wrapper">
+    <div class="left-half"></div>
+
+    <div class="right-half">
+        <div class="register-container">
+            <div class="restaurant-name-top">GOURMET TABLES</div>
+
+            <h1>Welcome!</h1>
+            <p>Register as a new user or Login</p>
+
+            <form method="POST" action="{% url 'accounts:register' %}">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Enter Name" required>
+                <input type="password" name="password" placeholder="Enter Password" required>
+
+                <div class="button-container">
+                    <button type="submit" class="submit-btn">Register</button>
+                    <a href="{% url 'accounts:login' %}" class="login-btn">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

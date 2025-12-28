@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="text-align:center;">Table Booking Requests</h1>
+
+<table style="width:100%; margin-top:20px; border-collapse:collapse;">
+    <tr>
+        <th>Restaurant</th>
+        <th>Customer</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Guests</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for booking in bookings %}
+    <tr>
+        <td>{{ booking.restaurant.name }}</td>
+        <td>{{ booking.user.username }}</td>
+        <td>{{ booking.booking_date }}</td>
+        <td>{{ booking.booking_time }}</td>
+        <td>{{ booking.guests }}</td>
+        <td>
+            {% if booking.status == "PENDING" %}
+                ⏳ Pending
+            {% elif booking.status == "CONFIRMED" %}
+                ✅ Accepted
+            {% elif booking.status == "REJECTED" %}
+                ❌ Rejected
+            {% endif %}
+        </td>
+
+        <td>
+            {% if booking.status == "PENDING" %}
+                <a href="{% url 'hotels:update_booking_status' booking.id 'accept' %}"
+                   style="color:green;">Accept</a>
+                |
+                <a href="{% url 'hotels:update_booking_status' booking.id 'reject' %}"
+                   style="color:red;">Reject</a>
+            {% else %}
+                —
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7" style="text-align:center;">No bookings yet</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

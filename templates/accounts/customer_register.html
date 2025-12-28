@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Registration - Gourmet Tables</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+    body, html { height:100%; width:100%; }
+
+    /* Background */
+    body {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:#0d5955;
+        overflow:hidden;
+    }
+
+    .page-bg {
+        position:fixed;
+        inset:0;
+        background:url("{% static 'images/restaurant_bg.jpg' %}") center/cover no-repeat;
+        filter:blur(6px);
+        opacity:0.4;
+        z-index:-2;
+    }
+
+    .page-overlay {
+        position:fixed;
+        inset:0;
+        background:#0f6a64;
+        opacity:0.6;
+        z-index:-1;
+    }
+
+    /* Card */
+    .card-wrapper {
+        width:750px;
+        max-width:95%;
+        height:auto;
+        background:rgba(255,255,255,0.9);
+        border-radius:18px;
+        box-shadow:0 15px 45px rgba(0,0,0,0.35);
+        display:flex;
+        overflow:hidden;
+        position:relative;
+    }
+
+    .card-left {
+        flex:1;
+        background:url("{% static 'images/restaurant_bg.jpg' %}") center/cover no-repeat;
+        filter:grayscale(20%);
+        position:relative;
+    }
+
+    .card-left::after {
+        content:"";
+        position:absolute;
+        inset:0;
+        background:#0c746b;
+        opacity:0.75;
+        mix-blend-mode:multiply;
+    }
+
+    /* Right content */
+    .card-right {
+        flex:1;
+        padding:60px 50px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        position:relative;
+    }
+
+    .brand {
+        font-size:28px;
+        font-weight:700;
+        color:#0c746b;
+        margin-bottom:25px;
+        text-align:center;
+    }
+
+    h2 {
+        font-size:24px;
+        font-weight:600;
+        color:#333;
+        margin-bottom:15px;
+        text-align:center;
+    }
+
+    .subtitle {
+        font-size:14px;
+        color:#555;
+        margin-bottom:30px;
+        text-align:center;
+    }
+
+    form { display:flex; flex-direction:column; gap:18px; }
+
+    .input-group {
+        position:relative;
+    }
+
+    .input-group input {
+        width:100%;
+        padding:14px 16px 14px 42px;
+        font-size:14px;
+        border-radius:25px;
+        border:1px solid #ddd;
+        outline:none;
+        background:#f9f9f9;
+        transition:0.2s;
+    }
+
+    .input-group input:focus {
+        border-color:#0c746b;
+        box-shadow:0 0 0 3px rgba(12,116,107,0.15);
+        background:#fff;
+    }
+
+    .input-group span {
+        position:absolute;
+        left:14px;
+        top:50%;
+        transform:translateY(-50%);
+        font-size:16px;
+        color:#999;
+    }
+
+    .auth-btn {
+        margin-top:10px;
+        padding:14px;
+        font-size:16px;
+        font-weight:600;
+        border:none;
+        border-radius:25px;
+        background:#0c746b;
+        color:#fff;
+        cursor:pointer;
+        transition:background 0.3s, transform 0.1s, box-shadow 0.3s;
+        box-shadow:0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    .auth-btn:hover {
+        background:#0a5e57;
+        transform:translateY(-1px);
+        box-shadow:0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .auth-footer {
+        margin-top:18px;
+        font-size:13px;
+        color:#666;
+        text-align:center;
+    }
+
+    .auth-footer a {
+        color:#0c746b;
+        text-decoration:none;
+        font-weight:600;
+    }
+
+    .auth-footer a:hover { text-decoration:underline; }
+
+    @media (max-width:768px) {
+        .card-wrapper {
+            flex-direction:column;
+            height:auto;
+        }
+        .card-left { display:none; }
+        .card-right { padding:40px 30px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="page-bg"></div>
+<div class="page-overlay"></div>
+
+<div class="card-wrapper">
+    <div class="card-left"></div>
+
+    <div class="card-right">
+        <div class="brand">Gourmet Tables</div>
+        <h2>Create Your Account</h2>
+        <p class="subtitle">Fill in your details to get started</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <span>&#128100;</span>
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <span>&#9993;</span>
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+                <span>&#128274;</span>
+                <input type="password" name="password1" placeholder="Password" required>
+            </div>
+            <div class="input-group">
+                <span>&#128274;</span>
+                <input type="password" name="password2" placeholder="Confirm Password" required>
+            </div>
+            <button type="submit" class="auth-btn">Sign Up</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'accounts:customer_login' %}">Log in</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

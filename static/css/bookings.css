@@ -1,0 +1,107 @@
+/* Main container with elegant gradient */
+main {
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+
+    /* Elegant gradient: deep blue + soft gold */
+    background: linear-gradient(135deg, #1f2a44, #3a3f58, #8c7b6b, #d9c3a6);
+    background-size: cover;
+}
+
+/* Bookings container */
+.bookings-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05); /* subtle glass effect */
+    backdrop-filter: blur(10px);
+    box-shadow: none; /* remove card hover shadow */
+}
+
+/* Headings */
+.bookings-container h2,
+.bookings-container h3 {
+    color: #ffffff;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+}
+
+/* Reservation cards */
+.reservation-card {
+    background: rgba(255, 255, 255, 0.08); /* subtle transparency for contrast */
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    transition: none; /* remove hover transitions */
+    color: #ffffff; /* text fully readable */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: none; /* remove shadow */
+}
+
+/* Remove hover effect completely */
+.reservation-card:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.08); /* same as normal */
+    box-shadow: none;
+}
+
+/* Reservation card headings and text */
+.reservation-card h4,
+.reservation-card p {
+    color: #ffffff;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.confirmed {
+    background: #28a745;
+    color: white;
+}
+
+.pending {
+    background: #ffc107;
+    color: black;
+}
+
+.cancelled {
+    background: #dc3545;
+    color: white;
+}
+
+/* Cancel button */
+.btn-cancel {
+    padding: 6px 12px;
+    background: #ff4c4c;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: none; /* no hover effect */
+}
+
+.btn-cancel:hover {
+    background: #ff4c4c; /* same as normal */
+    transform: none; /* no scaling */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .bookings-container {
+        padding: 10px;
+    }
+
+    .reservation-card h4 {
+        font-size: 1.2rem;
+    }
+}

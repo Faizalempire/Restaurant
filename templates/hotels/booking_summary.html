@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Booking Summary | {{ reservation.hotel_name }}{% endblock %}
+
+{% block content %}
+<section class="booking-summary-container">
+    <h1>Booking Confirmed!</h1>
+
+    <div class="summary-card">
+        <p><strong>Hotel:</strong> {{ reservation.restaurant.name }}</p>
+        <p><strong>Name:</strong> {{ reservation.user.username }}</p>
+        <p><strong>Date:</strong> {{ reservation.booking_date }}</p>
+        <p><strong>Time:</strong> {{ reservation.booking_time }}</p>
+        <p><strong>Guests:</strong> {{ reservation.guests }}</p>
+    </div>
+
+    <div class="buttons">
+        <a href="#" id="add-to-calendar" class="btn-action">Add to Calendar</a>
+        <a href="{% url 'hotels:my_reservations' %}" class="btn-action">My Reservations</a>
+    </div>
+</section>
+
+
+<!-- ===================== CALENDAR SCRIPT ====================== -->
+<script>
+function formatDateForCalendar(dateStr, timeStr) {
+    // Convert YYYY-MM-DD + HH:MM AM/PM to YYYYMMDDTHHMMSSZ
+    const [year, month, day] = dateStr.split('-');
+    let [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+
+    if (modifier === 'PM' && hours < 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+
+    return `${year}${month}${day}T${hh}${mm}00Z`;
+}
+
+document.getElementById('add-to-calendar').addEventListener('click', function(e) {
+    e.preventDefault();
+    const title = encodeURIComponent("{{ reservation.hotel_name }} Booking");
+
+    const startDate = formatDateForCalendar("{{ reservation.date }}", "{{ reservation.time }}");
+
+    // End time = +1 hour
+    const endDateObj = new Date(Date.parse("{{ reservation.date }}T{{ reservation.time }}"));
+    endDateObj.setHours(endDateObj.getHours() + 1);
+
+    const endDate =
+        `${endDateObj.getFullYear()}${String(endDateObj.getMonth()+1).padStart(2,'0')}${String(endDateObj.getDate()).padStart(2,'0')}T${String(endDateObj.getHours()).padStart(2,'0')}${String(endDateObj.getMinutes()).padStart(2,'0')}00Z`;
+
+    /* Google Calendar */
+    const googleURL =
+        `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}`;
+
+    /* Outlook */
+    const outlookURL =
+        `https://outlook.office.com/owa/?path=/calendar/action/compose&subject=${title}&startdt=${startDate}&enddt=${endDate}`;
+
+    /* iCal (.ics) file */
+    const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+DTSTART:${startDate}
+DTEND:${endDate}
+END:VEVENT
+END:VCALENDAR
+    `.trim();
+
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const icsURL = URL.createObjectURL(blob);
+
+    /* Open Google Calendar */
+    window.open(googleURL, '_blank');
+
+    /* Download iCal file automatically */
+    const a = document.createElement('a');
+    a.href = icsURL;
+    a.download = `${title}.ics`;
+    a.click();
+});
+</script>
+
+
+<!-- ===================== STYLING ====================== -->
+<style>
+.booking-summary-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: linear-gradient(160deg, #046307 0%, #FFF8E7 60%);
+    border-radius: 20px;
+    text-align: center;
+    color: #046307;
+    font-family: 'Cinzel', serif;
+}
+
+.summary-card {
+    background: #fff8e7;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    text-align: left;
+}
+
+.summary-card p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 12px 25px;
+    background-color: #D4AF37;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.btn-action:hover {
+    background-color: #b88b4a;
+}
+</style>
+
+{% endblock %}

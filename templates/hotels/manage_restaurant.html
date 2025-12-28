@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Manage Restaurant{% endblock %}
+
+{% block content %}
+<div class="manage-restaurant-container">
+    <h1>Manage Restaurant</h1>
+
+    <!-- Select restaurant -->
+    <label for="restaurant-select">Select Restaurant:</label>
+    <select id="restaurant-select">
+        <option value="1">Restaurant 1</option>
+        <option value="2">Restaurant 2</option>
+        <option value="3">Restaurant 3</option>
+        <option value="4">Restaurant 4</option>
+        <option value="5">Restaurant 5</option>
+        <option value="6">Restaurant 6</option>
+    </select>
+
+    <!-- Restaurant form -->
+    <div class="restaurant-form">
+        <h2 id="restaurant-heading">Restaurant 1 Details</h2>
+
+        <label>Description:</label>
+        <textarea id="description" placeholder="Enter restaurant description"></textarea>
+
+        <label>Cuisine Type:</label>
+        <input type="text" id="cuisine" placeholder="e.g. Italian, Chinese">
+
+        <label>Address:</label>
+        <input type="text" id="address" placeholder="Restaurant address">
+
+        <label>Working Hours:</label>
+        <input type="text" id="hours" placeholder="e.g. Mon-Sun 10:00 AM - 10:00 PM">
+
+        <label>Upload Images:</label>
+        <input type="file" id="image-upload" multiple>
+        <div id="restaurant-images" class="restaurant-images"></div>
+
+        <button id="save-btn">Save Changes</button>
+    </div>
+</div>
+
+<!-- Pass Django static URL to JS -->
+<script>
+    const staticUrl = "{% static '' %}";
+</script>
+
+<script>
+const restaurantSelect = document.getElementById('restaurant-select');
+const restaurantHeading = document.getElementById('restaurant-heading');
+const restaurantImagesDiv = document.getElementById('restaurant-images');
+const imageUploadInput = document.getElementById('image-upload');
+
+// Store restaurant data frontend-only
+let restaurants = {
+    1: { name: "Restaurant 1", images: [] },
+    2: { name: "Restaurant 2", images: [] },
+    3: { name: "Restaurant 3", images: [] },
+    4: { name: "Restaurant 4", images: [] },
+    5: { name: "Restaurant 5", images: [] },
+    6: { name: "Restaurant 6", images: [] },
+};
+
+// Load images for selected restaurant
+function loadImages(restaurantId) {
+    restaurantImagesDiv.innerHTML = '';
+    const images = restaurants[restaurantId].images;
+    images.forEach((imgName, idx) => {
+        const div = document.createElement('div');
+        div.classList.add('restaurant-image');
+        div.innerHTML = `
+            <img src="${staticUrl}images/${imgName}" alt="${imgName}">
+            <button class="delete-btn" data-idx="${idx}">Delete</button>
+        `;
+        restaurantImagesDiv.appendChild(div);
+    });
+
+    // Add delete button listeners
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function(){
+            const idx = this.getAttribute('data-idx');
+            restaurants[restaurantSelect.value].images.splice(idx, 1);
+            loadImages(restaurantSelect.value);
+        });
+    });
+}
+
+// When restaurant is changed
+restaurantSelect.addEventListener('change', function(){
+    const restaurantId = this.value;
+    restaurantHeading.textContent = `${restaurants[restaurantId].name} Details`;
+    loadImages(restaurantId);
+});
+
+// Upload images
+imageUploadInput.addEventListener('change', function(){
+    const files = Array.from(this.files);
+    files.forEach(file => {
+        restaurants[restaurantSelect.value].images.push(file.name); // frontend-only
+    });
+    loadImages(restaurantSelect.value);
+    this.value = ''; // reset input
+});
+
+// Save button (frontend-only)
+document.getElementById('save-btn').addEventListener('click', function(){
+    alert('Changes saved (frontend-only)');
+});
+
+// Load initial restaurant images
+loadImages(restaurantSelect.value);
+</script>
+
+<style>
+.manage-restaurant-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #fdfdfd;
+    border-radius: 12px;
+    font-family: Arial, sans-serif;
+    color: #111;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.manage-restaurant-container h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.manage-restaurant-container label {
+    display: block;
+    margin: 15px 0 5px;
+    font-weight: bold;
+}
+
+.manage-restaurant-container input,
+.manage-restaurant-container textarea,
+.manage-restaurant-container select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.manage-restaurant-container button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.manage-restaurant-container button:hover {
+    background: #218838;
+}
+
+.restaurant-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.restaurant-image {
+    position: relative;
+}
+
+.restaurant-image img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255,0,0,0.8);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 5px;
+}
+</style>
+{% endblock %}
